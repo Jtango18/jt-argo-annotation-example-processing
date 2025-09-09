@@ -1,0 +1,50 @@
+{
+  "apiVersion": "argoproj.io/v1alpha1",
+  "kind": "Application",
+  "metadata": {
+    "annotations": {
+      "argo.octopus.com/project": "proj-1",
+      "argo.octopus/environment": "development",
+      "argo.octopus.com/image-replace-alias.shared1": "$shared-values/some-path/values.yaml",
+      "argo.octopus.com/image-replace-alias.shared2": "$shared-values/another-path/values.yaml",
+      "argo.octopus.com/image-replace-paths.shared1": "{{ .Values.image.name}}:{{ .Values.image.version}}, {{ .Values.another-image.name }}",
+      "argo.octopus.com/image-replace-paths.shared2": "{{ .Values.different.structure.here.image }}"
+    },
+    "name": "single-ref-path-separation",
+    "namespace": "argocd"
+  },
+  "spec": {
+    "project": "default",
+    "sources": [
+      {
+        "repoURL": "https://github.com/another-repo/shared-values-files-here",
+        "targetRevision": "main",
+        "ref": "shared-values"
+      },
+      {
+        "repoURL": "https://github.com/my-repo/my-argo-app-be",
+        "path": "app-files",
+        "targetRevision": "main",
+        "helm": {
+          "valueFiles": [
+            "$shared-values/some-path/values.yaml"
+          ]
+        }
+      },
+      {
+        "repoURL": "https://github.com/my-repo/my-argo-app-fe",
+        "path": "app-files",
+        "targetRevision": "main",
+        "helm": {
+          "valueFiles": [
+            "$shared-values/another-path/values.yaml"
+          ]
+        }
+      }
+    ]
+  },
+  "destination": {
+    "server": "https://kubernetes.default.svc",
+    "namespace": "single-ref-path-separation"
+  }
+}

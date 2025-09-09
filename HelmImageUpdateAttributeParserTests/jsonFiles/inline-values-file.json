@@ -1,0 +1,32 @@
+{
+  "apiVersion": "argoproj.io/v1alpha1",
+  "kind": "Application",
+  "metadata": {
+    "annotations": {
+      "argo.octopus.com/project": "proj-1",
+      "argo.octopus.environment": "development",
+      "argo.octopus.com/image-replace-paths": "{{ .Values.image.name}}:{{ .Values.image.version}}, {{ .Values.another-image.name }}"
+    },
+    "name": "helm-inline-values",
+    "namespace": "argocd"
+  },
+  "spec": {
+    "project": "default",
+    "sources": [
+      {
+        "repoURL": "https://github.com/my-repo/my-argo-app",
+        "path": "Chart",
+        "targetRevision": "main",
+        "helm": {
+          "valueFiles": [
+            "values.yaml"
+          ]
+        }
+      }
+    ]
+  },
+  "destination": {
+    "server": "https://kubernetes.default.svc",
+    "namespace": "helm-inline-values"
+  }
+}

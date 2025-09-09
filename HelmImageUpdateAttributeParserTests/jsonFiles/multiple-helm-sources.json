@@ -1,0 +1,45 @@
+{
+  "apiVersion": "argoproj.io/v1alpha1",
+  "kind": "Application",
+  "metadata": {
+    "annotations": {
+      "argo.octopus.com/project": "proj-1",
+      "argo.octopus/environment": "development",
+      "argo.octopus.com/image-replace-alias.app1": "https://github.com/my-repo/my-argo-app/main/values.yaml",
+      "argo.octopus.com/image-replace-alias.app2": "https://github.com/my-repo/my-other-argo-app/main/cool/values.yaml",
+      "argo.octopus.com/image-replace-paths.app1": "{{ .Values.image.name}}:{{ .Values.image.version}}, {{ .Values.another-image.name }}",
+      "argo.octopus.com/image-replace-paths.app2": "{{ .Values.different.structure.here.image }}"
+    },
+    "name": "helm-multi-inline-values",
+    "namespace": "argocd"
+  },
+  "spec": {
+    "project": "default",
+    "sources": [
+      {
+        "repoURL": "https://github.com/my-repo/my-argo-app",
+        "path": "./",
+        "targetRevision": "main",
+        "helm": {
+          "valueFiles": [
+            "values.yaml"
+          ]
+        }
+      },
+      {
+        "repoURL": "https://github.com/my-repo/my-other-argo-app",
+        "path": "cool",
+        "targetRevision": "main",
+        "helm": {
+          "valueFiles": [
+            "values.yaml"
+          ]
+        }
+      }
+    ]
+  },
+  "destination": {
+    "server": "https://kubernetes.default.svc",
+    "namespace": "helm-multi-inline-values"
+  }
+}
