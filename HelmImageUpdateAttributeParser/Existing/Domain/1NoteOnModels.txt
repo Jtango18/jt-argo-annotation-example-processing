@@ -1,0 +1,4 @@
+NOTE
+_________
+These models are currently the minimum representation needed to perform the YAML image updating step.
+They should not be considered a comprehensive Deserialisation target of the ArgoCD API
